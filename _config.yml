@@ -6,7 +6,7 @@ url: "https://Theprashil.github.io"
 title: ickl0cc Blogs                                   # site's title
 description: "A website where i share my infosec writeups"      # used by search engines
 avatar: assets/img/triangle.png                         # Empty for no avatar in navbar
-favicon: assets/favicon.ico.jpg                            # Icon displayed in the tab
+favicon: assets/favicon.ico                        # Icon displayed in the tab
 
 # Header and footer text
 header_text: ""
