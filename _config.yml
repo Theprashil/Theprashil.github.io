@@ -10,7 +10,7 @@ favicon: assets/hacker.ico                        # Icon displayed in the tab
 
 # Header and footer text
 header_text: The quieter you become, the more you are able to hear.
-header_feature_image: ""
+header_feature_image: assets/img/kali.jpg
 footer_text: 2020
 
   
