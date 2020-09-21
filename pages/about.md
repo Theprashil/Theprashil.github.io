@@ -14,4 +14,4 @@ This page will contain posts based on various CTFs, personal projects, own exper
 # Socials
 <hr style="margin: -0.1em 0 !important;">
 - <a href="" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i> Twitter </a>
-- <a href="" target="_blank"><i class="fa fa-github" aria-hidden="true"></i> Github </a>
+- <a href="https://github.com/Theprashil" target="_blank"><i class="fa fa-github" aria-hidden="true"></i> Github </a>
