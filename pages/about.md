@@ -1,6 +1,7 @@
 ---
 layout: page
 title: About Me
+color: Brown
 permalink: /about/
 #feature-img: "assets/img/pexels/circuit.jpeg"
 ---
