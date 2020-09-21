@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Categories
+color: grey
 subtitle: Do something you like.
 permalink: /categories/
 redirect_from:
