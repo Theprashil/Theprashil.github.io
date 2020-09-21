@@ -1,14 +1,17 @@
 ---
 layout: page
-title: About
+title: About Me
 permalink: /about/
-feature-img: "assets/img/pexels/circuit.jpeg"
-tags: [About, Archive]
+#feature-img: "assets/img/pexels/circuit.jpeg"
 ---
 
-Type on Strap is based on Type Theme, a free and open-source theme for [Jekyll](http://jekyllrb.com/), licensed under the MIT License.
+Namaste! My name is Prashil Silwal and I am a computer science student.
 
-Head over to the [theme's documentation](https://github.io/sylhare/Type-on-Strap) for much more information about Type on Strap or to install this theme on your own Jekyll site.
+This page will contain posts based on various CTFs, personal projects, own experiences. If there is anything else you would like to see, feel free to reach out to me using any of the platforms listed below. That being said, I would also really appreciate any feedback you guys have, so don’t be shy!
 
-This file is an example of a page in Jekyll, that automatically shows up in the header navigation, you can delete or modify this file freely.
- 
+> **Disclaimer**: Opinions and views in this blog are solely my own and in no shape or form represent those of my past, present or future employers, unless stated otherwise.
+
+# Socials
+<hr style="margin: -0.1em 0 !important;">
+- <a href="" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i> Twitter </a>
+- <a href="" target="_blank"><i class="fa fa-github" aria-hidden="true"></i> Github </a>
