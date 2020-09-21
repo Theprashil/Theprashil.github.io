@@ -4,7 +4,7 @@ title: Anonymous writeup
 hide_title: false
 color: grey
 permalink: /ctf/thm-anonymous 
-feature-img: "assets/img/thm/anonymous/anonymous.png" 
+#feature-img: 
 author: ickl0cc
 tags: [Tryhackme]
 excerpt_separator: <!--more-->
