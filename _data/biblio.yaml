@@ -1,7 +1,4 @@
-- authors: John Smith
-  title: A Title About Citations
+- authors: ickl0cc
+  title: 
   key: ref1
 
-- authors: Michael's Rose
-  title: "[Minimal Mistakes](https://mmistakes.github.io/minimal-mistakes/markup-syntax-highlighting)"
-  key: highlight
