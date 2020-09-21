@@ -1,9 +1,9 @@
 ---
 layout: page
 title: About Me
-#feature-img: "assets/img/aboutme.jpg"
+feature-img: "assets/aboutme.jpg"
 permalink: /about/
-feature-img: "assets/img/pexels/circuit.jpeg"
+
 ---
 
 Namaste! My name is Prashil Silwal and I am a computer science student.
