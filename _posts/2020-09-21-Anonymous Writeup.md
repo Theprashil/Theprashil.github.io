@@ -2,7 +2,7 @@
 layout: post
 title: Anonymous writeup
 hide_title: false
-color: blue
+color: grey
 permalink: /ctf/thm-anonymous
 #feature-img: 
 author: ickl0cc
