@@ -11,8 +11,7 @@ excerpt_separator: <!--more-->
 ---
 <!--more-->
 <img src="/assets/img/thm/internal/title.png" width="800" height="120" align="left" ><br>
-<br>
-**Difficulty:** Hard
+<br>**Difficulty:** Hard
 
 ## Intro
 Namaste everyone. This is my first [writeup](http://writeup.So).  So if there are any mistakes please feel free to reach out to me. Also thanks to TheMayor for creating this box. As a begineer into ctfs i really enjoyed solving this box.
