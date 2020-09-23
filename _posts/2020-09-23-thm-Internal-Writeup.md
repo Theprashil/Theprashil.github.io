@@ -10,7 +10,7 @@ tags: [Tryhackme , tunneling , jenkins , wp]
 excerpt_separator: <!--more-->
 ---
 
-<img src="/assets/img/thm/internal/title.png" rect width="16" height="16" fill="#58A9D7" ><br>
+<img src="/assets/img/thm/internal/title.png" rect width="16" height="16" ><br>
 Difficulty: Hard
 
 # Intro
@@ -30,7 +30,7 @@ nmap -sC -sV -T4 -p- -v -oN nmap/fullscan internal.thm
 
 ```
 Here are the open ports:
-```bash
+```console
 Nmap scan report for internal.thm (10.10.119.154)
 Host is up (0.43s latency).
 Not shown: 65533 closed ports
@@ -61,6 +61,7 @@ gobuster dir -u http://internal.thm -w /usr/share/wordlists/dirbuster/directory-
 <a href="/assets/img/thm/internal/gobuster.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/gobuster.png"></a>
 
 There's a blog directory so lets see what it contains
+
 <a href="/assets/img/thm/internal/wp.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/wp.png"></a>
 
 Its a wordpress website. I looked into the site and there's a classic hello world page. The first thing that came into mind is to run wpscan to see if there is any vulnerabilites of this wordpress site and enumerate the wordpress site. Its a great tool.
@@ -71,10 +72,13 @@ It comes preinstalled if you are using kali otherwise you can clone it from [git
 wpscan --url internal.thm/blog -e -v
 ```
 `-e` means enumerate everything
+
 `-v` is to verbose output and if you want to save the output you can use `-o` 
+
 Use `-h` for help
 
 <a href="/assets/img/thm/internal/wpusers.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/wpusers.png"></a>
+
 Looking at the results the Wordpress version is `5.4.2`  and it found one user admin. We know the username. At this moment i only had a username so lets bruteforce with hydra.
 
 ```bash
@@ -86,6 +90,7 @@ So it found the password. I don't want to spoil the password if you were looking
 # Exploitation
 
 <a href="/assets/img/thm/internal/wp_dashboard.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/wp_dashboard.png"></a>
+
 The site is pretty new. Let's get a reverse shell so we can go deep inside the box. There are multiple ways to get reverse shell but we have the credentials so the one we are using is uploading our malicious code in `wp_theme`.To get the connection you need to upload the php reverse shell to the site. We can grab the php reverse shell from pentestmonkey. 
 
 Go to `Apperance>Theme Editor > 404 template >` and paste the code there. Replace the ip with your attacker ip address and open up a listener in your machine.
@@ -99,7 +104,7 @@ Update file and browse the following URL to run the injected php code.
 <a href="/assets/img/thm/internal/wpreverse.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/wpreverse.png"></a>
 Once inside at first i did'nt looked at all the folders properly. Further looking inside there's a file in the `/opt`  named `wp-save.txt`
 
-```bash
+```console
 www-data@internal:/opt$ ls -la
 total 16
 drwxr-xr-x  3 root root 4096 Aug  3 03:01 .
@@ -134,10 +139,9 @@ aubreanna@internal:~$ ls
 jenkins.txt  snap  user.txt
 ```
 # Priviledge Escalation
+After enumerating this box i found that it has a internal port `8080` open. it didnt pop out in our nmap scan becuase it can be accessed only by localhost. We need to pivot to reach to that port.
 
-After enumerating this box i found that it has a internal port 8080 open. it didnt pop out in our nmap scan becuase it can be accessed only by localhost. We need to pivot to reach to that port.
-
-```bash
+```console
 aubreanna@internal:~$ netstat -ntl
 Active Internet connections (only servers)
 Proto Recv-Q Send-Q Local Address           Foreign Address         State      
