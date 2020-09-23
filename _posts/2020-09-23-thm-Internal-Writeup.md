@@ -13,7 +13,7 @@ excerpt_separator: <!--more-->
 <img src="/assets/img/thm/internal/title.png" width="16" height="16" ><br>
 Difficulty: Hard
 
-# Intro
+## Intro
 Namaste everyone. This is my first [writeup](http://writeup.So).  So if there are any mistakes please feel free to reach out to me. Also thanks to TheMayor for creating this box. As a begineer into ctfs i really enjoyed solving this box.
 
 Before we get started i wanna shed some light into the type of box we are dealing and short description of the attack. To get the userflag you need to exploit the wordpress site running at the specific directory. For root, you need to enumerate, find the local jenkins server bruteforce it and get a shell where you can get info for creds to ssh into root user.
@@ -47,7 +47,7 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```
 The box has http and ssh server open.Let's enumerate port 80 first
 
-## - Port 80
+### - Port 80
 
 Looking at the site its a default apache page
 
@@ -87,7 +87,7 @@ hydra -l admin -P /usr/share/wordlists/rockyou.txt internal.thm -V -f http-form-
 ```
 So it found the password. I don't want to spoil the password if you were looking for hints. Let's login inside `/blog/wp-admin`
 
-# Exploitation
+## Exploitation
 
 <a href="/assets/img/thm/internal/wp_dashboard.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/wp_dashboard.png"></a>
 
@@ -138,7 +138,7 @@ There you go. There's a user.txt file which contains the first flag
 aubreanna@internal:~$ ls
 jenkins.txt  snap  user.txt
 ```
-# Priviledge Escalation
+## Priviledge Escalation
 After enumerating this box i found that it has a internal port `8080` open. it didnt pop out in our nmap scan becuase it can be accessed only by localhost. We need to pivot to reach to that port.
 
 ```console
@@ -250,7 +250,7 @@ root@internal:~#
 
 Okay here's the final flag for the box inside `root.txt`
 
-# Conclusion
+## Conclusion
 
 Thanks for reading folks! I really enjoyed this box as it required manual enumeration rather than automated tools. At the end i thought it would be fun to exploit the jenkin server using the java deserialization and getting the root flag through there. Anyways i really liked it.
 
