@@ -86,6 +86,8 @@ Looking at the results the Wordpress version is `5.4.2`  and it found one user a
 hydra -l admin -P /usr/share/wordlists/rockyou.txt internal.thm -V -f http-form-post '/blog/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log+In&redirect_to=http%3A%2F%2Fi[32/32$
 .thm%2Fblog%2Fwp-admin%2F&testcookie=1:S=Location
 ```
+<a href="/assets/img/thm/internal/hydralogin.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/hydralogin.png"></a>
+
 So it found the password. I don't want to spoil the password if you were looking for hints. Let's login inside `/blog/wp-admin`
 
 ## Exploitation
@@ -196,7 +198,7 @@ ame=^USER^&j_password=^PASS^&from=%2F&Submit=Sign+in:S=logout"
 
 `S:` Find whatever in the page after successfully logged in
 
-#<a href="/assets/img/thm/internal/.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/.png"></a>
+<a href="/assets/img/thm/internal/jenkinhydra.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/internal/jenkinhydra.png"></a>
 
 Let's login with the obatined creds at jenkins
 
@@ -257,7 +259,10 @@ Okay here's the final flag for the box inside `root.txt`
 
 ## Conclusion
 
-Thanks for reading folks! I really enjoyed this box as it required manual enumeration rather than automated tools. At the end i thought it would be fun to exploit the jenkin server using the java deserialization and getting the root flag through there. Anyways i really liked it.
+Thanks for reading folks! I really enjoyed this box as it required manual enumeration rather than using automated tools for priviledge escalation. 
+I will keep posting writeup boxes i solve through this platform in coming days.
+
+~ickl0cc
 
 
 
