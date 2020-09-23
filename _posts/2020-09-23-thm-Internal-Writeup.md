@@ -19,6 +19,8 @@ Namaste everyone. This is my first [writeup](http://writeup.So).  So if there ar
 
 Before we get started i wanna shed some light into the type of box we are dealing and short description of the attack. To get the userflag you need to exploit the wordpress site running at the specific directory. For root, you need to enumerate, find the local jenkins server bruteforce it and get a shell where you can get info for creds to ssh into root user.
 
+***
+
 ## Scanning and Enumeration
 
 Before getting started put `internal.thm` in your `/etc/hosts` 
