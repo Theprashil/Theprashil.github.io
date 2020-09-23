@@ -11,8 +11,7 @@ excerpt_separator: <!--more-->
 ---
 <!--more-->
 <img src="/assets/img/thm/internal/title.png" width="800" height="120" align="left" ><br>
-
-
+<br>
 **Difficulty:** Hard
 
 ## Intro
