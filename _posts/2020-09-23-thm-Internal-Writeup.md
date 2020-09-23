@@ -259,7 +259,6 @@ Okay here's the final flag for the box inside `root.txt`
 
 Thanks for reading folks! I really enjoyed this box as it required manual enumeration rather than automated tools. At the end i thought it would be fun to exploit the jenkin server using the java deserialization and getting the root flag through there. Anyways i really liked it.
 
-***
 
 
 
