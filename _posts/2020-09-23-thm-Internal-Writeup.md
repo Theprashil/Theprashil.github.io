@@ -10,7 +10,7 @@ tags: [Tryhackme , tunneling , jenkins , wp]
 excerpt_separator: <!--more-->
 ---
 
-<img src="/assets/img/thm/internal/title.png" width="16" height="16" ><br>
+<img src="/assets/img/thm/internal/title.png" width="417" height="120" ><br>
 Difficulty: Hard
 
 ## Intro
