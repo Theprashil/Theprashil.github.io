@@ -139,6 +139,8 @@ There you go. There's a user.txt file which contains the first flag
 aubreanna@internal:~$ ls
 jenkins.txt  snap  user.txt
 ```
+***
+
 ## Priviledge Escalation
 After enumerating this box i found that it has a internal port `8080` open. it didnt pop out in our nmap scan becuase it can be accessed only by localhost. We need to pivot to reach to that port.
 
@@ -251,10 +253,13 @@ root@internal:~#
 
 Okay here's the final flag for the box inside `root.txt`
 
+***
+
 ## Conclusion
 
 Thanks for reading folks! I really enjoyed this box as it required manual enumeration rather than automated tools. At the end i thought it would be fun to exploit the jenkin server using the java deserialization and getting the root flag through there. Anyways i really liked it.
 
+***
 
 
 
