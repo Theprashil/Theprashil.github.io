@@ -14,6 +14,8 @@ excerpt_separator: <!--more-->
 
 **Difficulty:** Hard
 <!--more-->
+**URL:** [Internal](https://tryhackme.com/room/internal)
+
 ## Intro
 Namaste everyone. This is my first writeup. So if there are any mistakes please feel free to reach out to me. Also thanks to **TheMayor** for creating this box. As a beginer into ctf's I really enjoyed solving this box.
 
@@ -262,7 +264,7 @@ Okay here's the final flag for the box inside `root.txt`
 
 ## Conclusion
 
-Thanks for reading folks! I really enjoyed this box as it required manual enumeration rather than using automated tools for priviledge escalation. 
+Thanks for reading folks! I really enjoyed this box as it required manual enumeration rather than using automated tools for privilege escalation. 
 I will keep posting writeups through this platform in upcoming days.
 
 ~ickl0cc
