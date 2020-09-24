@@ -12,9 +12,9 @@ excerpt_separator: <!--more-->
 
 <img src="/assets/img/thm/internal/title.png" width="800" height="120" ><br>
 
-**Difficulty:** Hard
+**Difficulty:** Hard<br>
 <!--more-->
-<br>
+
 **URL:** [Internal](https://tryhackme.com/room/internal)
 
 ## Intro
