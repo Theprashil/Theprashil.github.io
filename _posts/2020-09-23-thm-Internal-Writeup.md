@@ -14,7 +14,7 @@ excerpt_separator: <!--more-->
 
 **Difficulty:** Hard
 <!--more-->
-
+<br>
 **URL:** [Internal](https://tryhackme.com/room/internal)
 
 ## Intro
