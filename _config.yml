@@ -25,7 +25,7 @@ color_image: /assets/img/lineart.png                    # A bit transparent for 
 katex: true                                             # Enable if using math markup
 google_analytics: UA-178506345-1                                    # Tracking ID, e.g. "UA-000000-01"
 cookie_consent: false                                   # To respect the usage of cookies
-disqus_shortname:                                       # Your discus shortname for comments
+disqus_shortname: ickl0cc                                  # Your discus shortname for comments
 
 # PAGINATION
 paginate: 5
