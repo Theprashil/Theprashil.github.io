@@ -13,6 +13,7 @@ redirect_from:
     <li>Tryhackme</li>
     <ul>
         <li><a href="/ctf/thm-internal">Internal writeup</a></li>
+        <li><a href="/ctf/thm-jeff">Jeff writeup</a></li>
         
 </ul>
 
