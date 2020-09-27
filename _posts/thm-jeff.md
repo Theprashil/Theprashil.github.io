@@ -50,7 +50,7 @@ Looking at the site its an blank page. Viewing the source we find that we need t
 
 Let's visit `jeff.thm` now
 
-<a href="/assets/img/thm/jeff/jeffhome.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/jeff/jefffhome.png"></a>
+<a href="/assets/img/thm/jeff/jeffhome.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/jeff/jeffhome.png"></a>
 
 Browsing at the site we don't find anything interesting. So i fired out gobuster to see if there are hidden directories
 
