@@ -9,6 +9,22 @@ permalink: /ctf/thm-internal
 tags: [Tryhackme , tunneling , jenkins , wp]
 excerpt_separator: <!--more-->
 ---
+<meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag -->
+<title>TryHackme Internal Writeup | ickl0cc</title>
+<meta name="generator" content="Jekyll v3.8.6" />
+<meta property="og:title" content="TryHackme Internal Writeup" />
+<meta name="author" content="ickl0cc>" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Here I will explain my path for Internal box from Tryhackme" />
+<meta property="og:description" content="Here I will explain my path for Internal box from Tryhackme" />
+<link rel="canonical" href="http://localhost:4000/_posts/2020-09-23-thm-internal.md" />
+<meta property="og:url" content="http://localhost:4000/_posts/2020-09-23-thm-internal.md" />
+<meta property="og:site_name" content="ickl0cc" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-23T00:00:00+05:45" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","url":"http://localhost:4000/_posts/2020-09-23-thm-internal.md","headline":"Tryhackme Internal Writeup","dateModified":"2020-09-23T00:00:00+05:45","datePublished":"2020-09-23T00:00:00+05:45","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/_posts/2020-09-23-thm-internal.md"},"author":{"@type":"Person","name":"ickl0cc>"},"description":"Here I will explain my path for Tryhackme box from Tryhackme","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
 
 <img src="/assets/img/thm/internal/title.png" width="800" height="120" ><br>
 
