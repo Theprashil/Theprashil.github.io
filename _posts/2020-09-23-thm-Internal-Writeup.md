@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Tryhackme: Internal Writeup
+title: Tryhackme-Internal Writeup
 hide_title: false
 color: grey
 permalink: /ctf/thm-internal
