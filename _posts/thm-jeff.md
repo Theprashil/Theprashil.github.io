@@ -214,6 +214,8 @@ So at this moment i struggled as well. I was learning as well and it felt like i
 
 I took some help and research about **[wildcard exploitation](https://www.hackingarticles.in/exploiting-wildcard-for-privilege-escalation/)** 
 
+**After looking how can i automate this, found that in container `python3.7` is installed which is going to be helpful for us**
+
 **I will try my best to explain it to you**
 
 I curl to the host we are given with the creds and list what's inside using this
