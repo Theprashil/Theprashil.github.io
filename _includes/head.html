@@ -67,4 +67,6 @@
     {% if site.theme_settings.twitter %}<meta name="twitter:creator" content="@{{ site.theme_settings.twitter }}">{% endif %}
     <meta name="twitter:card" content="{% unless page.thumbnail %}summary{% else %}summary_large_image{% endunless %}">
     <meta name="twitter:image" content="{{ '/' | absolute_url }}{% if page.thumbnail %}{{ page.thumbnail }}{% else %}{{ page.feature-img | default: site.header_feature_image }}{% endif %}">
+    <!-- Search console -->
+    <meta name="google-site-verification" content="KXGuFXreadU_1f4jCn5dhknzfAXt_JVh2dmzS9Mtl4I" />
 </head>
