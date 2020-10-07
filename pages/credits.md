@@ -1,5 +1,5 @@
 ---
-layout: credit
+layout: page
 title: Credits
 permalink: /credit/
 #subtitle: "What are you looking for?"
